@@ -1,19 +1,19 @@
-# Dockerfile Definitivo v3
+# Dockerfile Final e Consolidado v4
 
-# Começa com a imagem oficial do n8n como base
+# 1. Começa com a imagem oficial do n8n como base
 FROM n8nio/n8n:latest
 
-# Mude para o usuário root para poder instalar pacotes
+# 2. Muda para o usuário root para poder instalar o que precisamos
 USER root
 
-# Instale o FFmpeg
+# 3. Instala o FFmpeg.
 RUN apk add --no-cache ffmpeg
 
-# --- MUDANÇA IMPORTANTE ABAIXO ---
-
-# Retorna para o usuário padrão 'node'
+# 4. Muda de volta para o usuário 'node'
 USER node
 
-# Define o ponto de entrada do container. Este comando é mais poderoso que o CMD.
-# Ele força a execução da correção de permissões ANTES de iniciar o n8n.
-ENTRYPOINT ["sh", "-c", "chown -R node:node /home/node/.n8n; exec n8n start --tunnel"]
+# 5. Define o comando de inicialização definitivo.
+#    Esta linha é a mais importante:
+#    a) Ela força a mudança de dono da pasta /data para o usuário 'node'.
+#    b) E SOMENTE DEPOIS, ela inicia o n8n de forma segura.
+ENTRYPOINT ["sh", "-c", "chown -R node:node /data && exec n8n start --tunnel"]
